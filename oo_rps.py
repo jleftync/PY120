@@ -1,7 +1,7 @@
 import random
 
 class Player:
-    CHOICES = ('rock', 'paper', 'scissors')
+    CHOICES = ('rock', 'paper', 'scissors', 'lizard', 'spock')
 
     def __init__(self):   
         pass
@@ -40,7 +40,7 @@ class Human(Player, Score):
         self.score = Score()
 
     def choose(self):
-        prompt = 'Please choose rock, paper, or scissors:'
+        prompt = 'Please choose rock, paper, scissors, lizard, or spock:'
 
         while True:
             choice = input(prompt).lower()
@@ -54,31 +54,37 @@ class Human(Player, Score):
     
 
 class RPSGame:
+    
+    winning_cases = {
+        'rock': {'scissors', 'lizard'},
+        'paper': {'rock', 'spock'},
+        'scissors': {'paper', 'lizard'},
+        'lizard': {'paper', 'spock'},
+        'spock': {'r', 'scissors'},
+    }
+    
+    
     def __init__(self):
         self._human = Human()
         self._computer = Computer()
 
     def _display_welcome_message(self):
-        print('Welcome to Rock Paper Scissors!')
+        print('Welcome to Rock Paper Scissors Lizard spock!')
 
     def _display_goodbye_message(self):
-        print('Thanks for playing Rock Paper Scissors. Goodbye!')
+        print('Thanks for playing Rock Paper Scissors Lizard Spock. Goodbye!')
 
     def _human_wins(self):
         human_move = self._human.move
         computer_move = self._computer.move
 
-        return ((human_move == 'rock' and computer_move == 'scissors') or
-            (human_move == 'paper' and computer_move == 'rock') or
-            (human_move == 'scissors' and computer_move == 'paper'))
+        return computer_move in RPSGame.winning_cases[human_move]
 
     def _computer_wins(self):
         human_move = self._human.move
         computer_move = self._computer.move
 
-        return ((computer_move == 'rock' and human_move == 'scissors') or
-            (computer_move == 'paper' and human_move == 'rock') or
-            (computer_move == 'scissors' and human_move == 'paper'))
+        return computer_move in RPSGame.winning_cases[human_move]
 
     def _display_winner(self):
         print(f'You chose: {self._human.move}')
