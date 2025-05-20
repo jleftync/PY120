@@ -1,4 +1,6 @@
 import random
+import numpy as np
+
 
 class History:
     def __init__(self):
@@ -91,8 +93,8 @@ class Score:
         return str(self.points)
 
     
-
 class Computer(Player, Score):
+    
     def __init__(self):
         super().__init__()
         self.score = Score()
@@ -102,14 +104,42 @@ class Computer(Player, Score):
         self.move = Player.MOVE_CLASSES[choice]()
         self.history.add_move(self.move)
 
+
 class Daneel(Computer):
-    pass
+    def __init__(self):
+        super().__init__()
+    
+    def choose(self):
+        if bool(self.history) == False:
+            
+            choice = random.choice(Player.CHOICES)
+            self.move = Player.MOVE_CLASSES[choice]()
+            self.history.add_move(self.move)
+        else:
+            self.move = self.history[0]()
+            self.history.add_move(self.move)
+
 
 class R2d2(Computer):
-    pass
+    def __init_(self):
+        super.__init__()
+    
+    def choose(self):
+        self.move = Rock()
+        self.history.add_move(self.move)
 
 class Hal(Computer):
-    pass
+    def __init__(self):
+        super.__init__()
+    
+    def choose(self):
+        probabilities = [.1, .1, .6, .1, .1]
+        choice = np.random.choice(Player.CHOICES, p=probabilities)
+        self.move = Player.MOVE_CLASSES[choice]()
+        self.history.add_move(self.move)
+        
+
+
 
 class Human(Player, Score):
 
@@ -134,12 +164,21 @@ class Human(Player, Score):
     
 
 class RPSGame:
+
+    PERSONALITY_LIST = ['daneel', 'r2d2', 'hal']
+    PERSONALITY_CLASSES = {
+        'daneel': Daneel,
+        'r2d2': R2d2,
+        'hal': Hal
+
+    }
     
 
     
     def __init__(self):
         self._human = Human()
-        self._computer = Computer()
+        choice = random.choice(self.PERSONALITY_LIST)
+        self._computer = self.PERSONALITY_CLASSES[choice]()
 
     def _display_welcome_message(self):
         print('Welcome to Rock Paper Scissors Lizard spock!')
