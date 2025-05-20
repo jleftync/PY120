@@ -1,10 +1,83 @@
 import random
 
+class History:
+    def __init__(self):
+        self.value = []
+    
+    def add_move(self, move):
+        if isinstance(move, Move):
+            self.value.append(move)
+            out_history = " ".join(str(val) for val in self.value)
+            print(out_history)
+        else:
+            return NotImplemented
+
+class Move: 
+    def __init__(self, value):
+        self.value = value
+    
+    def __str__(self):
+        return self.value
+    
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.value == other.value
+        return NotImplemented
+
+
+class Rock(Move):
+    def __init__(self):
+        super().__init__('rock')
+    
+    
+    def beats(self, other):
+        return str(other) in ['scissors', 'lizard']
+
+class Paper(Move):
+    def __init__(self):
+        super().__init__('paper')
+    
+    
+    def beats(self, other):
+        return str(other) in ['rock', 'spock']
+
+class Scissors(Move):
+    def __init__(self):
+        super().__init__('scissors')
+    
+    
+    def beats(self, other):
+        return str(other) in ['paper', 'lizard']
+
+class Lizard(Move):
+    def __init__(self):
+        super().__init__('lizard')
+    
+    
+    def beats(self, other):
+        return str(other) in ['paper', 'spock']
+
+class Spock(Move):
+    def __init__(self,):
+        super().__init__('spock')
+    
+    
+    def beats(self, other):
+        return str(other) in ['rock', 'scissors']
+    
 class Player:
     CHOICES = ('rock', 'paper', 'scissors', 'lizard', 'spock')
+    MOVE_CLASSES = {
+        'rock': Rock,
+        'paper': Paper,
+        'scissors': Scissors,
+        'lizard': Lizard,
+        'spock': Spock
+    }
 
     def __init__(self):   
-        pass
+        self.move = None
+        self.history = History()
 
 class Score:
     def __init__(self):
@@ -16,26 +89,32 @@ class Score:
     
     def __str__(self):
         return str(self.points)
-    
 
-
-    
     
 
 class Computer(Player, Score):
     def __init__(self):
         super().__init__()
         self.score = Score()
-    
-
-        
 
     def choose(self):
-        self.move = random.choice(Player.CHOICES)
+        choice = random.choice(Player.CHOICES)
+        self.move = Player.MOVE_CLASSES[choice]()
+        self.history.add_move(self.move)
+
+class Daneel(Computer):
+    pass
+
+class R2d2(Computer):
+    pass
+
+class Hal(Computer):
+    pass
 
 class Human(Player, Score):
 
     def __init__(self):
+        super().__init__()
         self.move = None
         self.score = Score()
 
@@ -49,20 +128,14 @@ class Human(Player, Score):
 
             print(f'Sorry, {choice} is not valid')
 
-        self.move = choice
+        self.move = Player.MOVE_CLASSES[choice]()
+        self.history.add_move(self.move)
     
     
 
 class RPSGame:
     
-    winning_cases = {
-        'rock': {'scissors', 'lizard'},
-        'paper': {'rock', 'spock'},
-        'scissors': {'paper', 'lizard'},
-        'lizard': {'paper', 'spock'},
-        'spock': {'r', 'scissors'},
-    }
-    
+
     
     def __init__(self):
         self._human = Human()
@@ -78,13 +151,13 @@ class RPSGame:
         human_move = self._human.move
         computer_move = self._computer.move
 
-        return computer_move in RPSGame.winning_cases[human_move]
+        return human_move.beats(computer_move)
 
     def _computer_wins(self):
         human_move = self._human.move
         computer_move = self._computer.move
 
-        return computer_move in RPSGame.winning_cases[human_move]
+        return computer_move.beats(human_move)
 
     def _display_winner(self):
         print(f'You chose: {self._human.move}')
@@ -116,9 +189,9 @@ class RPSGame:
             self._human.choose()
             self._computer.choose()
             self._display_winner()
-            self._display_goodbye_message()
             if self._human.score.points == 5 or self._computer.score.points == 5:
                 if not self._play_again():
+                    self._display_goodbye_message()
                     break
 
 RPSGame().play()
