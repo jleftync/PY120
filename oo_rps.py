@@ -116,7 +116,7 @@ class Daneel(Computer):
             self.move = Player.MOVE_CLASSES[choice]()
             self.history.add_move(self.move)
         else:
-            self.move = self.history[0]()
+            self.move = self.history.value[0]()
             self.history.add_move(self.move)
 
 
