@@ -198,7 +198,8 @@ class TTTGame:
 
     def __init__(self):
         """
-        Initializes a new Tic Tac Toe game with a board, a human player, and a computer player."""
+        Initializes a new Tic Tac Toe game with a board, a human player, 
+        and a computer player."""
         self.board = Board()
         self.human = Human()
         self.computer = Computer()
@@ -266,6 +267,13 @@ class TTTGame:
                     break
             else:
 
+                self.human_moves()
+                if self.is_game_over():
+                    self.board.display()
+                    self.display_results()
+                    self.detect_winner()
+                    break
+
                 self.computer_moves()
                 if self.is_game_over():
                     self.board.display()
@@ -273,12 +281,7 @@ class TTTGame:
                     self.detect_winner()
                     break
 
-                self.human_moves()
-                if self.is_game_over():
-                    self.board.display()
-                    self.display_results()
-                    self.detect_winner()
-                    break
+                
 
 
 
@@ -323,8 +326,13 @@ class TTTGame:
         Check if the given player has three markers in a row.
         """
         for row in TTTGame.POSSIBLE_WINNING_ROWS:
-            if all(self.board.squares[key].marker == player.marker for key in row):
-                return True
+                if all(
+                    self.board.squares[key].marker == player.marker for 
+                    key in row
+                    ):
+                    return True
+    
+        
         return False
 
     def is_winner(self, player):
@@ -337,7 +345,8 @@ class TTTGame:
     @staticmethod
     def _join_or(items, delimiter=', ', final_delimiter=' or '):
         """
-        Joins a list of items into a string with a specified delimiter and final delimiter.
+        Joins a list of items into a string with a specified delimiter and
+        final delimiter.
         """
         if len(items) == 1:
             return items[0]
@@ -349,9 +358,10 @@ class TTTGame:
 
     def _play_again(self):
         """
-        Asks the player if they want to play again and resets the game if they do.
+        Asks the player if they want to play again and 
+        resets the game if they do.
         """
-        answer = input("Would you like to play again? (y/n): ")
+        answer = input("Would you like to play again? (y/n): ").lower()
         if answer not in ['y', 'n']:
             print("Invalid input. Please enter 'y' or 'n'")
             return self._play_again()
@@ -370,7 +380,8 @@ class TTTGame:
 
     def human_moves(self):
         """
-        Handles the human player's move by prompting for input and marking the board.
+        Handles the human player's move by prompting for input and 
+        marking the board.
         """
         valid_choices = self.board.unused_squares()
         while True:
@@ -415,23 +426,30 @@ class TTTGame:
 
     def computer_moves(self):
         """
-        Handles the computer player's move by checking for winning moves or blocking moves.
+        Handles the computer player's move by checking for 
+        winning moves or blocking moves.
         """
         valid_choices = self.board.unused_squares()
-        if self.check_for_two_of_three(self.computer) or self.check_for_two_of_three(self.human):
+        if (
+            self.check_for_two_of_three(self.computer) or 
+            self.check_for_two_of_three(self.human)
+            ):
             choice = self.choose_ai_move()
             print("Computer moves")
             self.board.mark_square_at(choice, self.computer.marker)
+            return
 
         if self.board.is_square_unused(5):
             choice = 5
             print("Computer moves")
             self.board.mark_square_at(choice, self.computer.marker)
+            return
 
         else:
             choice = random.choice(valid_choices)
             print("Computer moves")
             self.board.mark_square_at(choice, self.computer.marker)
+            return
 
 
     def someone_won(self):
